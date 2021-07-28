@@ -2,9 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { stripe } from "../../../services/stripe";
 import { getSession } from 'next-auth/client'
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default async(req: NextApiRequest, res: NextApiResponse) => {
   if(req.method === 'POST'){
-    const session = getSession({req})
+    const session = await getSession({req})
 
     const stripeCustomer = await stripe.customers.create({
       email: session.user.email
@@ -25,7 +26,8 @@ export default async(req: NextApiRequest, res: NextApiResponse) => {
 
     return res.status(200).json({sessionId: stripeCheckoutSession.id})
   }else{
-    res.setHeader('Allow', 'POST').
+    res.setHeader('Allow', 'POST')
     res.status(405).end('Method not allowed')
+    console.log(req)
   }
 }
