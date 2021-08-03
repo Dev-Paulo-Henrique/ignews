@@ -2,9 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Readable } from 'stream'
 import Stripe from "stripe";
 import { stripe } from "../../services/stripe";
+import { saveSubscription } from "./_lib/manageSubscription";
 
 async function buffer(readable: Readable){
-  const chunks = []
+  const chunks = [];
 
   for await (const chunk of readable) {
     chunks.push(
@@ -12,12 +13,12 @@ async function buffer(readable: Readable){
     )
   }
 
-  return Buffer.from(chunks)
+  return Buffer.concat(chunks)
 }
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false
   }
 }
 
@@ -25,16 +26,20 @@ const relevantEvents = new Set([
   'checkout.session.completed'
 ])
 
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default async (req: NextApiRequest, res: NextApiResponse)=>{
   if(req.method === 'POST'){
   const buf = await buffer(req)
   const secret = req.headers['stripe-signature']
+ 
 
 let event: Stripe.Event
 
 try{
+  
   event = stripe.webhooks.constructEvent(buf, secret, process.env.STRIPE_WEBHOOK_SECRET)
+  
 }catch (err){
   return res.status(400).send(`Webhoook error: ${err.message}`)
 }
@@ -42,10 +47,15 @@ try{
 const {type} = event
 
 if(relevantEvents.has(type)){
-  console.log('evento recebido', event)
+  console.log('evento relevant', event)
 try{
   switch(type){
     case 'checkout.session.completed':
+      const checkoutSession = event.data.object as Stripe
+
+      await saveSubscription(
+        event.
+      )
       break;
       default:
         throw new Error('Unhandled event.')
