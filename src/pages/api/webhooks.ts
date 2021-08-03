@@ -51,10 +51,11 @@ if(relevantEvents.has(type)){
 try{
   switch(type){
     case 'checkout.session.completed':
-      const checkoutSession = event.data.object as Stripe
+      const checkoutSession = event.data.object as Stripe.Checkout.Session
 
       await saveSubscription(
-        event.
+        checkoutSession.subscription.toString(),
+        checkoutSession.customer.toString()
       )
       break;
       default:
