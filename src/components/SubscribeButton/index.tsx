@@ -6,7 +6,7 @@ import styles from './styles.module.scss'
 
 interface SubscribeButtonProps{
   priceId: string;
-}//k
+}
 
 export function SubscribeButton({ priceId }: SubscribeButtonProps){
   const [session] = useSession()
