@@ -6,7 +6,7 @@ import { getPrismicClient } from "../../../services/prismic"
 import styles from '../post.module.scss'
 import Link from 'next/link'
 import { useEffect } from "react"
-import { useRouter } from "next/dist/client/router"
+import { useRouter } from "next/router"
 
 interface PostPreviewProps {
   post: {
@@ -25,6 +25,7 @@ export default function PostPreview({ post }: PostPreviewProps){
     if(session?.activeSubscription){
       router.push(`/posts/${post.slug}`)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
 
   return(
